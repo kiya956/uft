@@ -1,0 +1,16 @@
+[project]
+name = "uft"
+description = "universal flash tool for IoT project"
+readme = "README"
+requires-python = ">=3.10"
+dependencies = [
+    "pyyaml",
+    "wrapt_timeout_decorator",
+    "whl",
+]
+
+dynamic = ["version"]
+
+[project.scripts]
+uft = "universal_flash.entry:main"
+
