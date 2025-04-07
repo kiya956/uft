@@ -8,6 +8,10 @@ uuu = [
     "Freescale Semiconductor, Inc. i.MX 6Dual/6Quad SystemOnChip in RecoveryMode"
 ]
 
+imx6_flashing = [
+    "Freescale Semiconductor, Inc. i.MX 6ULL SystemOnChip in RecoveryMode"
+]
+
 def main():
     flashing = None
     print("Waiting for target device....")
@@ -20,6 +24,9 @@ def main():
             else:
                 cmd = "uuu uc.lst"
             flashing = subprocess.Popen(cmd, text=True, shell=True)
+            break
+        elif any(device in result.stdout for device in imx6_flashing):
+            print("imx6 flashing tool TBD")
             break
         time.sleep(3)
 
