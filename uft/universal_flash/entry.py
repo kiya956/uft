@@ -12,6 +12,10 @@ imx6_flashing = [
     "Freescale Semiconductor, Inc. i.MX 6ULL SystemOnChip in RecoveryMode"
 ]
 
+qdl = [
+    "Qualcomm, Inc. Gobi Wireless Modem (QDL mode)"
+]
+
 def main():
     flashing = None
     print("Waiting for target device....")
@@ -27,6 +31,14 @@ def main():
             break
         elif any(device in result.stdout for device in imx6_flashing):
             print("imx6 flashing tool TBD")
+            break
+        elif any(device in result.stdout for device in qdl):
+            print("Qualcomm device is found")
+            if len(sys.argv) > 1:
+                cmd = "qdl " + (' '.join(sys.argv[1:]))
+            else:
+                cmd = "qdl"
+            flashing = subprocess.Popen(cmd, text=True, shell=True)
             break
         time.sleep(3)
 

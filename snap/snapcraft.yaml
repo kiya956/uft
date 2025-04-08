@@ -26,6 +26,7 @@ parts:
     stage-snaps:
       - on arm64:
         - imx6-img-flash-tool/latest/edge
+        - qdl/latest/edge
 
     override-build: |
       python3 -m venv /home/ubuntu/uft/parts/uft/install
