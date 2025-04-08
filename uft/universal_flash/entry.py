@@ -22,7 +22,7 @@ def main():
     while True:
         result = subprocess.run("lsusb", capture_output=True, text=True, shell=True)
         if any(device in result.stdout for device in uuu):
-            print("NXP uuu device is found")
+            print("NXP uuu device found")
             if len(sys.argv) > 1:
                 cmd = "uuu " + (' '.join(sys.argv[1:]))
             else:
@@ -33,7 +33,7 @@ def main():
             print("imx6 flashing tool TBD")
             break
         elif any(device in result.stdout for device in qdl):
-            print("Qualcomm device is found")
+            print("Qualcomm device found")
             if len(sys.argv) > 1:
                 cmd = "qdl " + (' '.join(sys.argv[1:]))
             else:
