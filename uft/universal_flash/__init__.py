@@ -5,6 +5,7 @@ import wget
 import tarfile
 import os
 from urllib.parse import urlparse
+from universal_flash.parser import DescriptorParser
 
 def untar_chdir(
     tarball,
@@ -69,5 +70,9 @@ def main():
 
     if untar_chdir(target):
         print("decompress tarball failed")
+        return
+
+    desc_parser = DescriptorParser("config.yaml")
+    if not desc_parser.data:
         return
 
