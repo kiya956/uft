@@ -16,7 +16,7 @@ qdl = [
     "Qualcomm, Inc. Gobi Wireless Modem (QDL mode)"
 ]
 
-def main():
+def provision_handler():
     flashing = None
     print("Waiting for target device....")
     while True:

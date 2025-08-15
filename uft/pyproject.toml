@@ -12,5 +12,5 @@ dependencies = [
 dynamic = ["version"]
 
 [project.scripts]
-uft = "universal_flash.entry:main"
+uft = "universal_flash:main"
 
