@@ -2,7 +2,32 @@
 
 import argparse
 import wget
+import tarfile
+import os
 from urllib.parse import urlparse
+
+def untar_chdir(
+    tarball,
+):
+    """untar file and change location to folder"""
+    print("Extracting the image archive...")
+    image_dir = ""
+    if not tarball:
+        return -1
+
+    with tarfile.open(tarball, "r:*") as archive:
+        names = archive.getnames()
+        # Extract top-level directories
+        top_dirs = {name.split("/")[0] for name in names if "/" in name}
+        if len(top_dirs) == 1:
+            image_dir = top_dirs.pop()
+
+        archive.extractall()
+
+    if image_dir:
+        os.chdir(image_dir)
+
+    return 0
 
 def is_valid_url(url):
     parsed = urlparse(url)
@@ -40,5 +65,9 @@ def main():
 
     if not target:
         print("please provide valid url or file name")
+        return
 
-    print(target)
+    if untar_chdir(target):
+        print("decompress tarball failed")
+        return
+
