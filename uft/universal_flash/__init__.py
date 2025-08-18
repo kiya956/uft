@@ -7,6 +7,7 @@ import os
 from urllib.parse import urlparse
 from universal_flash.parser import DescriptorParser
 
+
 def untar_chdir(
     tarball,
 ):
@@ -40,39 +41,49 @@ def main():
         description="Example program showing how to use argparse."
     )
 
-    # Positional argument
+
+    parser.add_argument(
+        "-m", "--meta",
+        help="meta file indicate where to download images, how to provision. If meta us provided, url and local would be ignored",
+    )
+
     parser.add_argument(
         "-u", "--url",
         help="The url of target file"
     )
 
-    # Optional argument with a value
     parser.add_argument(
         "-f", "--file",
         help="local target file, if url is provided. This argument would be ignored",
     )
 
+
     # Parse arguments
     args = parser.parse_args()
 
-    if args.url and is_valid_url(args.url):
-        try:
-            target = wget.download(args.url)
-        except Exception as e:
-            print("Download Target failed")
+    # For meta
+    if args.meta:
+        desc_parser = DescriptorParser(args.meta)
 
-    else:
-        target = args.file
+    else: # for single image
+        if args.url and is_valid_url(args.url):
+            try:
+                target = wget.download(args.url)
+            except Exception as e:
+                print("Download Target failed")
 
-    if not target:
-        print("please provide valid url or file name")
-        return
+        else:
+            target = args.file
 
-    if untar_chdir(target):
-        print("decompress tarball failed")
-        return
+        if not target:
+            print("please provide valid url or file name")
+            return
 
-    desc_parser = DescriptorParser("config.yaml")
+        if untar_chdir(target):
+            print("decompress tarball failed")
+            return
+
+        desc_parser = DescriptorParser("config.yaml")
+
     if not desc_parser.data:
         return
-
