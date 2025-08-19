@@ -2,11 +2,13 @@
 name = "uft"
 description = "universal flash tool for IoT project"
 readme = "README"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
     "pyyaml",
     "wrapt_timeout_decorator",
     "whl",
+    "genio-tools~=1.4.2",
+    "wget",
 ]
 
 dynamic = ["version"]

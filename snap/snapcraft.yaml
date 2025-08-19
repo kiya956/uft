@@ -1,5 +1,5 @@
 name: uft
-base: core22
+base: core24
 version: '0.0.1'
 summary: universal flash tool
 description: |
@@ -13,36 +13,64 @@ apps:
     command: bin/uft
     environment:
       PATH: '$SNAP/usr/sbin/:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH'
-      PYTHONPATH: '$SNAP/lib/python3.10/site-packages:$PYTHONPATH'
+      PYTHONPATH: '$SNAP/lib/python3.12/site-packages:$PYTHONPATH'
 
 parts:
   uft:
     plugin: python
     source: uft
     build-packages:
-      - python3-pip
+      - python3
+      - python3-venv       # needed to create the venv
+      - python3-dev        # if you build native wheels
+      - gcc 
     stage-packages:
+      - python3.12-minimal
+      - libpython3.12-stdlib
       - uuu
-    stage-snaps:
-      - on arm64:
-        - imx6-img-flash-tool/latest/edge
-        - qdl/latest/edge
 
-    override-build: |
-      python3 -m venv /home/ubuntu/uft/parts/uft/install
-      pip3 install .
-
+  libusb:
+    plugin: autotools
+    source: https://github.com/libusb/libusb.git
+    source-type: git
+    source-tag: v1.0.28
+    build-packages:
+      - libtool
+      - pkg-config
+      - autoconf
+      - automake
+      - libudev-dev
+    autotools-configure-parameters:
+      - --prefix=/usr
     organize:
-      imx_usb: usr/local/bin/
-      utp_com: usr/local/bin/
-      flash.sh: usr/loca/bin/
+      usr/include/libusb-1.0/libusb.h: usr/include/
 
+  libxml2:
+    plugin: autotools
+    source: https://gitlab.gnome.org/GNOME/libxml2.git
+    source-type: git
+    source-tag: v2.12.5
+    autotools-configure-parameters:
+      - --prefix=/usr
+    build-packages:
+      - libtool
+      - pkg-config
+      - zlib1g-dev
+      - python3-minimal  # libxml2's build system sometimes wants Python
+    organize:
+      usr/include/libxml2/libxml: usr/include/libxml
 
-    override-stage: |
-      if [ -f $CRAFT_PART_INSTALL/usr/local/bin/flash.sh ]; then
-        echo "Fixing `imx6-img-flash-tool` binaries path"
-        sed -i 's/imx6-img-flash-tool\.imx-usb/imx_usb/g' $CRAFT_PART_INSTALL/usr/local/bin/flash.sh
-        sed -i 's/imx6-img-flash-tool\.utp-com/utp_com/g' $CRAFT_PART_INSTALL/usr/local/bin/flash.sh
-        mv $CRAFT_PART_INSTALL/usr/local/bin/flash.sh $CRAFT_PART_INSTALL/usr/local/bin/imx6_flash
-      fi
-      craftctl default
+  qdl:
+    plugin: make
+    source: https://github.com/andersson/qdl.git
+    source-tag: v2.1
+    after: [libusb, libxml2]
+    build-environment:
+      - CPPFLAGS: "-I$SNAPCRAFT_STAGE/usr/include"
+      - LDFLAGS: "-L$SNAPCRAFT_STAGE/usr/lib"
+    build-packages:
+      - build-essential
+    override-build: |
+      make
+      install -D qdl $SNAPCRAFT_PART_INSTALL/usr/bin/qdl
+
