@@ -25,8 +25,6 @@ def syscmd(
             message,
             shell=True,
             start_new_session=True,  # We need a session, then it can pass down signal
-            stdout=Subprocess.PIPE,
-            stderr=Subprocess.PIPE,
             text=True,
             close_fds=True,
         )
