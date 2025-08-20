@@ -33,11 +33,11 @@ def syscmd(
         p.communicate(timeout=timeout)  # waits & reaps
 
         if p.returncode != 0:
-            print("command %s failed (rc=%s)", message, p.returncode)
+            print(f"command {message} failed (rc={p.returncode})")
             return FAILED
 
     except Subprocess.TimeoutExpired:
-        print("command %s timeout, timeout=%s", message, timeout)
+        print(f"command {message} timeout, timeout={timeout}")
         try:
             os.killpg(
                 p.pid, signal.SIGTERM
