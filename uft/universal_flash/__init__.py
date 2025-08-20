@@ -9,6 +9,7 @@ import time
 from urllib.parse import urlparse
 from universal_flash.parser import DescriptorParser
 from universal_flash.wspace import temp_local_directory
+from universal_flash.provision_handler import provision_handler
 
 def untar_copy(
     tarball: str,
@@ -131,3 +132,5 @@ def main():
 
         if not desc_parser.data:
             return
+
+        provision_handler(desc_parser.data)
