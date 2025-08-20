@@ -26,6 +26,7 @@ parts:
       - gcc 
     stage-packages:
       - python3.12-minimal
+      - python3-tk
       - libpython3.12-stdlib
       - uuu
 
