@@ -3,11 +3,16 @@ import re
 
 from universal_flash.command import syscmd
 from universal_flash.err import FAILED, SUCCESS
-from tkinter import messagebox
+
+def notify_and_wait():
+    print("\n" + "="*50)
+    print(" Notice: Please put your device into download mode")
+    print("="*50)
+    input("Press Enter to continue...\n")
 
 def provision_handler(data):
 
-    messagebox.showinfo("Notice", "Please put your device into download mode")
+    notify_and_wait()
     match data["provision"]:
         case "uuu":
             try:
