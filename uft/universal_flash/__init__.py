@@ -82,7 +82,7 @@ def main():
 
     parser.add_argument(
         "-m", "--meta",
-        help="meta file indicate where to download images, how to provision. If meta us provided, url and local would be ignored",
+        help="meta file indicate where to download images, how to provision. If meta is provided, url and local file would be ignored",
     )
 
     parser.add_argument(
