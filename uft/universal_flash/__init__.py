@@ -4,12 +4,49 @@ import argparse
 import wget
 import tarfile
 import os
+import shutil
+import time
 from urllib.parse import urlparse
 from universal_flash.parser import DescriptorParser
+from universal_flash.wspace import temp_local_directory
+
+def untar_copy(
+    tarball: str,
+    target_dir: str = "temp"
+):
+    """untar file and copy file to target folder"""
+    print("Extracting the image archive...")
+    image_dir = ""
+    if not tarball:
+        return -1
+
+    with tarfile.open(tarball, "r:*") as archive:
+        names = archive.getnames()
+        # Extract top-level directories
+        top_dirs = {name.split("/")[0] for name in names if "/" in name}
+        if len(top_dirs) == 1:
+            image_dir = top_dirs.pop()
+
+        archive.extractall()
+
+    if image_dir:
+        os.mkdir(target_dir)
+        for item in os.listdir(image_dir):
+            source_file = os.path.join(image_dir, item)
+            dest_file = os.path.join(target_dir, item)
+
+            if os.path.isdir(source_file):
+                shutil.copytree(source_file, dest_file)
+            else:
+                shutil.copy2(source_file, dest_file)
+
+        os.chdir(target_dir)
+
+    return 0
 
 
 def untar_chdir(
-    tarball,
+    tarball: str,
 ):
     """untar file and change location to folder"""
     print("Extracting the image archive...")
@@ -60,30 +97,37 @@ def main():
 
     # Parse arguments
     args = parser.parse_args()
+    current_dir = os.getcwd()
+    with temp_local_directory():
+        # For meta
+        if args.meta:
+            print(args.meta)
+            desc_parser = DescriptorParser(f"{current_dir}/{args.meta}")
+            print(desc_parser.data)
+            urls = desc_parser.data["urls"]
+            for url in urls:
+                target = wget.download(url)
+                untar_copy(target)
 
-    # For meta
-    if args.meta:
-        desc_parser = DescriptorParser(args.meta)
+        else: # for single image
+            if args.url and is_valid_url(args.url):
+                try:
+                    target = wget.download(args.url)
+                except Exception as e:
+                    print("Download Target failed")
 
-    else: # for single image
-        if args.url and is_valid_url(args.url):
-            try:
-                target = wget.download(args.url)
-            except Exception as e:
-                print("Download Target failed")
+            else:
+                target = args.file
 
-        else:
-            target = args.file
+            if not target:
+                print("please provide valid url or file name")
+                return
 
-        if not target:
-            print("please provide valid url or file name")
+            if untar_chdir(target):
+                print("decompress tarball failed")
+                return
+
+            desc_parser = DescriptorParser("config.yaml")
+
+        if not desc_parser.data:
             return
-
-        if untar_chdir(target):
-            print("decompress tarball failed")
-            return
-
-        desc_parser = DescriptorParser("config.yaml")
-
-    if not desc_parser.data:
-        return
