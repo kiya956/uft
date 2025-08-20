@@ -117,16 +117,23 @@ def main():
                 except Exception as e:
                     print("Download Target failed")
 
-            else:
+                if untar_chdir(target):
+                    print("decompress tarball failed")
+                    return
+
+            elif args.file:
                 target = args.file
 
-            if not target:
-                print("please provide valid url or file name")
-                return
+                if os.path.isdir(target):
+                    pass
+                else:
+                    shutil.copy2(f"{current_dir}/{target}", target)
+                    if untar_chdir(target):
+                        print("decompress tarball failed")
+                        return
 
-            if untar_chdir(target):
-                print("decompress tarball failed")
-                return
+            else:
+                parser.print_help()
 
             desc_parser = DescriptorParser("config.yaml")
 
