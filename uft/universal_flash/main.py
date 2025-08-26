@@ -121,6 +121,7 @@ def main():
                     target = wget.download(args.url)
                 except Exception as e:
                     print("Download Target failed")
+                    return
 
                 if untar_chdir(target):
                     print("decompress tarball failed")
