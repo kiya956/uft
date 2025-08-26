@@ -11,6 +11,21 @@ from unified_flash.parser import DescriptorParser
 from unified_flash.wspace import temp_local_directory
 from unified_flash.provision_handler import provision_handler
 
+def is_compressed(filepath):
+    with open(filepath, "rb") as f:
+        magic = f.read(6)
+    if magic.startswith(b"\x1f\x8b"):  # gzip
+        return "gzip"
+    if magic.startswith(b"PK\x03\x04"):  # zip
+        return "zip"
+    if magic.startswith(b"BZh"):  # bzip2
+        return "bzip2"
+    if magic.startswith(b"\xfd7zXZ"):  # xz
+        return "xz"
+    if magic.startswith(b"7z\xbc\xaf\x27\x1c"):  # 7z
+        return "7z"
+    return None
+
 def untar_copy(
     tarball: str,
     target_dir: str = "temp"
