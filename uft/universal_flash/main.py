@@ -102,13 +102,18 @@ def main():
     with temp_local_directory():
         # For meta
         if args.meta:
-            print(args.meta)
             desc_parser = DescriptorParser(f"{current_dir}/{args.meta}")
-            print(desc_parser.data)
-            urls = desc_parser.data["urls"]
-            for url in urls:
-                target = wget.download(url)
+            urls = desc_parser.data["items"]
+            for item in urls:
+                try:
+                    target = wget.download(item["url"])
+                except Exception as e:
+                    print("Download Target failed")
+                    return
+
                 untar_copy(target)
+                if "sha" in item:
+                    pass
 
         else: # for single image
             if args.url and is_valid_url(args.url):
