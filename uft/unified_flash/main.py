@@ -46,7 +46,6 @@ def untar_copy(
         archive.extractall()
 
     if image_dir:
-        os.mkdir(target_dir)
         for item in os.listdir(image_dir):
             source_file = os.path.join(image_dir, item)
             dest_file = os.path.join(target_dir, item)
@@ -117,8 +116,10 @@ def main():
     with temp_local_directory():
         # For meta
         if args.meta:
+            target_dir = "temp"
             desc_parser = DescriptorParser(f"{current_dir}/{args.meta}")
             urls = desc_parser.data["items"]
+            os.mkdir(target_dir)
             for item in urls:
                 try:
                     target = wget.download(item["url"])
@@ -126,7 +127,12 @@ def main():
                     print("Download Target failed")
                     return
 
-                untar_copy(target)
+                if  is_compressed(target):
+                    untar_copy(target, target_dir)
+                else:
+                    dest_file = os.path.join(target_dir, target)
+                    shutil.copytree(target, dest_file)
+
                 if "sha" in item:
                     pass
 
