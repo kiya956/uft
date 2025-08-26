@@ -1,8 +1,8 @@
 import os
 import re
 
-from universal_flash.command import syscmd
-from universal_flash.err import FAILED, SUCCESS
+from unified_flash.command import syscmd
+from unified_flash.err import FAILED, SUCCESS
 
 def notify_and_wait():
     print("\n" + "="*50)

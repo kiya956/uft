@@ -5,7 +5,7 @@ import os
 import signal
 import subprocess as Subprocess
 
-from universal_flash.err import FAILED, SUCCESS
+from unified_flash.err import FAILED, SUCCESS
 
 
 

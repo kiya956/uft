@@ -7,9 +7,9 @@ import os
 import shutil
 import time
 from urllib.parse import urlparse
-from universal_flash.parser import DescriptorParser
-from universal_flash.wspace import temp_local_directory
-from universal_flash.provision_handler import provision_handler
+from unified_flash.parser import DescriptorParser
+from unified_flash.wspace import temp_local_directory
+from unified_flash.provision_handler import provision_handler
 
 def untar_copy(
     tarball: str,
