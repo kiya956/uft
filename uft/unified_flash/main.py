@@ -6,6 +6,7 @@ import tarfile
 import os
 import shutil
 import time
+import lzma
 from urllib.parse import urlparse
 from unified_flash.parser import DescriptorParser
 from unified_flash.wspace import temp_local_directory
@@ -21,9 +22,15 @@ def is_compressed(filepath):
     if magic.startswith(b"BZh"):  # bzip2
         return "bzip2"
     if magic.startswith(b"\xfd7zXZ"):  # xz
-        return "xz"
+        with lzma.open(filepath, "rb") as xf:
+            head = xf.read(600)  # read enough for tar header area
+            if len(head) >= 262 and head[257:262] == b"ustar":
+                return "tar.xz"
+            else:
+                return "xz"
     if magic.startswith(b"7z\xbc\xaf\x27\x1c"):  # 7z
         return "7z"
+
     return None
 
 def untar_copy(
@@ -132,11 +139,27 @@ def main():
                     print("Download Target failed")
                     return
 
-                if  is_compressed(target):
-                    untar_copy(target, target_dir)
-                else:
+                fmt = is_compressed(target)
+                if not fmt:
                     dest_file = os.path.join(target_dir, target)
-                    shutil.copytree(target, dest_file)
+                    shutil.copy2(target, dest_file)
+
+                elif  fmt == "xz":
+                    out_image, ext = os.path.splitext(target)
+                                    # Perform decompression
+                    with (
+                        lzma.open(target, "rb") as f_in,
+                        open(out_image, "wb") as f_out,
+                    ):
+                        shutil.copyfileobj(f_in, f_out)
+                        print(
+                            f"Decompressed image: {target} -> {out_image}"
+                        )
+                    dest_file = os.path.join(target_dir, out_image)
+                    shutil.copy2(out_image, dest_file)
+
+                else:
+                    untar_copy(target, target_dir)
 
                 if "sha" in item:
                     pass
