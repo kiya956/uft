@@ -8,11 +8,11 @@ LAUNCHER_SCHEMA = {
         "items": {
             "type": "array",
             "minItems": 1,
-            "items": {
+            "urls": {
                 "type": "object",
                 "properties": {
                     "url": {"type": "string"},
-                    "sha": {"type": "string"},
+                    "sha256sum": {"type": "string"},
                 },
                 "required": ["url",]
             },

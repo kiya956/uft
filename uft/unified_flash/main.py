@@ -130,7 +130,7 @@ def main():
                 print(e)
                 return
                 
-            urls = desc_parser.data["items"]
+            urls = desc_parser.data["urls"]
             os.mkdir(target_dir)
             for item in urls:
                 try:
@@ -161,7 +161,7 @@ def main():
                 else:
                     untar_copy(target, target_dir)
 
-                if "sha" in item:
+                if "sha256sum" in item:
                     pass
 
         elif args.url or args.file: # for single image
