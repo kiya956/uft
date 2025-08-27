@@ -9,6 +9,7 @@ dependencies = [
     "whl",
     "genio-tools~=1.4.2",
     "wget",
+    "jsonschema",
 ]
 
 dynamic = ["version"]

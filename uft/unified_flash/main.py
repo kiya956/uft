@@ -117,7 +117,12 @@ def main():
         # For meta
         if args.meta:
             target_dir = "temp"
-            desc_parser = DescriptorParser(f"{current_dir}/{args.meta}")
+            try:
+                desc_parser = DescriptorParser(f"{current_dir}/{args.meta}")
+            except ValueError as e:
+                print(e)
+                return
+                
             urls = desc_parser.data["items"]
             os.mkdir(target_dir)
             for item in urls:
@@ -162,7 +167,11 @@ def main():
             else:
                 parser.print_help()
 
-            desc_parser = DescriptorParser("config.yaml")
+            try:
+                desc_parser = DescriptorParser("config.yaml")
+            except ValueError as e:
+                print(e)
+                return 
 
         if not desc_parser.data:
             return
