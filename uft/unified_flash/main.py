@@ -141,7 +141,7 @@ def main():
                 if "sha" in item:
                     pass
 
-        else: # for single image
+        elif args.url or args.file: # for single image
             if args.url and is_valid_url(args.url):
                 try:
                     target = wget.download(args.url)
@@ -164,14 +164,14 @@ def main():
                         print("decompress tarball failed")
                         return
 
-            else:
-                parser.print_help()
-
             try:
                 desc_parser = DescriptorParser("config.yaml")
             except ValueError as e:
                 print(e)
-                return 
+                return
+        else:
+            parser.print_help()
+            return 
 
         if not desc_parser.data:
             return
